@@ -30,7 +30,8 @@ module ResourceController # :nodoc:
       end
       
       def class_scoping_reader(accessor_name, start_value)
-        class_attribute accessor_name, start_value
+        class_attribute accessor_name
+        self.send "#{accessor_name}=", start_value
         
         class_eval <<-"end_eval", __FILE__, __LINE__
           def self.#{accessor_name}(&block)
