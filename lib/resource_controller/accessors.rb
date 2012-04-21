@@ -30,12 +30,12 @@ module ResourceController # :nodoc:
       end
       
       def class_scoping_reader(accessor_name, start_value)
-        write_inheritable_attribute accessor_name, start_value
+        class_attribute accessor_name, start_value
         
         class_eval <<-"end_eval", __FILE__, __LINE__
           def self.#{accessor_name}(&block)
-            read_inheritable_attribute(:#{accessor_name}).instance_eval(&block) if block_given?
-            read_inheritable_attribute(:#{accessor_name})
+            class_attribute(:#{accessor_name}).instance_eval(&block) if block_given?
+            class_attribute(:#{accessor_name})
           end
         end_eval
       end
@@ -55,20 +55,20 @@ module ResourceController # :nodoc:
           class_eval <<-"end_eval", __FILE__, __LINE__
             def self.#{accessor_name}(*args)
               unless args.empty?
-                write_inheritable_attribute :#{accessor_name}, args.first if args.length == 1
-                write_inheritable_attribute :#{accessor_name}, args if args.length > 1
+                class_attribute :#{accessor_name}, args.first if args.length == 1
+                class_attribute :#{accessor_name}, args if args.length > 1
               end
             
-              read_inheritable_attribute :#{accessor_name}
+              class_attribute :#{accessor_name}
             end
           
             def #{accessor_name}(*args)
               unless args.empty?
-                self.class.write_inheritable_attribute :#{accessor_name}, args.first if args.length == 1
-                self.class.write_inheritable_attribute :#{accessor_name}, args if args.length > 1
+                self.class.class_attribute :#{accessor_name}, args.first if args.length == 1
+                self.class.class_attribute :#{accessor_name}, args if args.length > 1
               end
             
-              self.class.read_inheritable_attribute :#{accessor_name}
+              self.class.class_attribute :#{accessor_name}
             end
           end_eval
         end
